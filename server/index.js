@@ -7,8 +7,11 @@ import postRoutes from './routes/post.route.js';
 import commentRoutes from './routes/comment.route.js';
 import clc from 'cli-color';
 import cookieParser from 'cookie-parser';
+import path from 'path';
 
 dotenv.config();
+
+const __dirname = path.resolve();
 
 const app = express();
 const PORT = process.env.PORT || 8000;
@@ -25,11 +28,9 @@ mongoose
 app.use(express.json());
 app.use(cookieParser());
 
-app.get("/", (req, res) => {
-  return res.send({
-    status: 200,
-    message: "Welcome to your blogging app",
-  });
+app.use(express.static(path.join(__dirname, '/client/dist')));
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'client', 'dist', 'index.html'));
 });
 
 app.listen(PORT, () => {
