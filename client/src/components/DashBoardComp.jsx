@@ -6,7 +6,7 @@ import {
   HiDocumentText,
   HiOutlineUserGroup,
 } from 'react-icons/hi';
-import { Button, Table } from 'flowbite-react';
+import { Button, Table, Spinner } from 'flowbite-react';
 import { Link } from 'react-router-dom';
 export default function DashBoardComp() {
   const [users, setUsers] = useState([]);
@@ -18,45 +18,55 @@ export default function DashBoardComp() {
   const [lastMonthUsers, setLastMonthUsers] = useState(0);
   const [lastMonthPosts, setLastMonthPosts] = useState(0);
   const [lastMonthComments, setLastMonthComments] = useState(0);
+  const [loading, setLoading] = useState(true);
   const { currentUser } = useSelector((state) => state.user);
   useEffect(() => {
     const fetchUsers = async () => {
       try {
+        setLoading(true);
         const res = await fetch('/api/user/getusers?limit=5');
         const data = await res.json();
         if (res.ok) {
           setUsers(data.users);
           setTotalUsers(data.totalUsers);
           setLastMonthUsers(data.lastMonthUsers);
+          setLoading(false);
         }
       } catch (error) {
         console.log(error.message);
+        setLoading(false);
       }
     };
     const fetchPosts = async () => {
       try {
+        setLoading(true);
         const res = await fetch('/api/post/getposts?limit=5');
         const data = await res.json();
         if (res.ok) {
           setPosts(data.posts);
           setTotalPosts(data.totalPosts);
           setLastMonthPosts(data.lastMonthPosts);
+          setLoading(false);
         }
       } catch (error) {
         console.log(error.message);
+        setLoading(false);
       }
     };
     const fetchComments = async () => {
       try {
+        setLoading(true);
         const res = await fetch('/api/comment/getcomments?limit=5');
         const data = await res.json();
         if (res.ok) {
           setComments(data.comments);
           setTotalComments(data.totalComments);
           setLastMonthComments(data.lastMonthComments);
+          setLoading(false);
         }
       } catch (error) {
         console.log(error.message);
+        setLoading(false);
       }
     };
     if (currentUser.isAdmin) {
@@ -65,6 +75,7 @@ export default function DashBoardComp() {
       fetchComments();
     }
   }, [currentUser]);
+
   return (
     <div className='p-3 md:mx-auto'>
       <div className='flex-wrap flex gap-4 justify-center'>
@@ -206,6 +217,10 @@ export default function DashBoardComp() {
           </Table>
         </div>
       </div>
+      {loading && <div className="flex justify-center items-center min-h-screen ">
+        <Spinner size="xl" />
+      </div>}
     </div>
+    
   );
 }

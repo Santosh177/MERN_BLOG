@@ -1,4 +1,4 @@
-import { Table, Modal, Button } from 'flowbite-react';
+import { Table, Modal, Button, Spinner } from 'flowbite-react';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
@@ -11,20 +11,24 @@ export default function DashPosts() {
   const [showMore, setShowMore] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [postIdToDelete, setPostIdToDelete] = useState('');
+  const [loading, setLoading] = useState(true);
   console.log(userPosts);
   useEffect(() => {
     const fetchPosts = async () => {
       try {
+        setLoading(true);
         const res = await fetch(`/api/post/getposts?userId=${currentUser._id}`);
         const data = await res.json();
         if (res.ok) {
           setUserPosts(data.posts);
+          setLoading(false);
           if (data.posts.length < 9) {
             setShowMore(false);
           }
         }
       } catch (error) {
         console.log(error.message);
+        setLoading(false);
       }
     };
     if (currentUser.isAdmin) {
@@ -72,7 +76,7 @@ export default function DashPosts() {
     }
   };
 
-
+ 
   return (
     <div className='table-auto overflow-x-scroll md:mx-auto p-3 scrollbar scrollbar-track-slate-100 scrollbar-thumb-slate-300 dark:scrollbar-track-slate-700 dark:scrollbar-thumb-slate-500'>
       {currentUser.isAdmin && userPosts.length > 0 ? (
@@ -145,7 +149,7 @@ export default function DashPosts() {
           )}
         </>
       ) : (
-        <p>You have no posts yet!</p>
+        !loading && <p>You have no posts yet!</p>
       )}
        <Modal
         show={showModal}
@@ -171,6 +175,9 @@ export default function DashPosts() {
           </div>
         </Modal.Body>
       </Modal>
+      {loading && <div className="flex justify-center items-center min-h-screen ">
+        <Spinner size="xl" />
+      </div>}
     </div>
   );
 }

@@ -50,7 +50,7 @@ export default function Header() {
     };
 
   return (
-    <Navbar className='border-b-2'>
+    <Navbar className='border-b-2 sticky top-0 z-50'>
       <Link
         to='/'
         className='self-center whitespace-nowrap text-sm sm:text-xl font-semibold dark:text-white'
@@ -70,7 +70,7 @@ export default function Header() {
           onChange={(e) => setSearchTerm(e.target.value)}
         />
       </form>
-      <Button className='w-12 h-10 lg:hidden' color='gray' pill>
+      <Button className='w-12 h-10 lg:hidden' color='gray' pill onClick={()=>navigate('/search')}>
         <AiOutlineSearch />
       </Button>
       <div className='flex gap-2 md:order-2'>

@@ -1,4 +1,4 @@
-import { Modal, Table, Button } from 'flowbite-react';
+import { Modal, Table, Button, Spinner} from 'flowbite-react';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { HiOutlineExclamationCircle } from 'react-icons/hi';
@@ -9,25 +9,30 @@ export default function DashComments() {
   const [showMore, setShowMore] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [commentIdToDelete, setCommentIdToDelete] = useState('');
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     const fetchComments = async () => {
       try {
+        setLoading(true);
         const res = await fetch(`/api/comment/getcomments`);
         const data = await res.json();
         if (res.ok) {
           setComments(data.comments);
+          setLoading(false);
           if (data.comments.length < 9) {
             setShowMore(false);
           }
         }
       } catch (error) {
         console.log(error.message);
+        setLoading(false);
       }
     };
     if (currentUser.isAdmin) {
       fetchComments();
     }
   }, [currentUser._id]);
+
   const handleShowMore = async () => {
     const startIndex = comments.length;
     try {
@@ -115,7 +120,7 @@ export default function DashComments() {
           )}
         </>
       ) : (
-        <p>You have no comments yet!</p>
+       !loading && <p>You have no comments yet!</p>
       )}
       <Modal
         show={showModal}
@@ -141,6 +146,9 @@ export default function DashComments() {
           </div>
         </Modal.Body>
       </Modal>
+      {loading && <div className="flex justify-center items-center min-h-screen ">
+        <Spinner size="xl" />
+      </div>}
     </div>
   );
 }
